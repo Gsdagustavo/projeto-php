@@ -2,6 +2,9 @@
 
 const internalError = "Erro interno no servidor. Tente novamente mais tarde";
 
+const name = "Gsdagustavo";
+const password = "123";
+
 class UserUseCase
 {
     public UserRepository $userRepository;
@@ -13,13 +16,8 @@ class UserUseCase
 
     public function login(string $name, string $password): ?string
     {
-        $user = $this->userRepository->getUserByName($name);
-        if (!$user) {
-            return "Usuário inválido";
-        }
-
-        if ($password != $user->getPassword()) {
-            return "Senha inválida";
+        if ($name !== name || $password !== password) {
+            return "Credenciais inválidas";
         }
 
         return null;
@@ -54,6 +52,11 @@ class UserUseCase
         }
 
         return null;
+    }
+
+    public function getAllUsers(): array
+    {
+        return $this->userRepository->getAllUsers();
     }
 
     public function updateUser(User $user): ?string

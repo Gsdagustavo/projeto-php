@@ -47,6 +47,14 @@ class UserRepository
         return $stmt->rowCount();
     }
 
+    public function getAllUsers(): array
+    {
+        $sql = "SELECT * FROM users";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function getUserByName(string $name): ?User
     {
         $sql = "SELECT * FROM users WHERE name = :name";
