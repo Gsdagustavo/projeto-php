@@ -4,13 +4,13 @@ function getConnection(): ?PDO
 {
     $host = "localhost";
     $user = "root";
-    $password = "admin";
+    $password = "pass";
     $dbname = "projeto_php";
 
     try {
-        return new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
+        return new PDO("mysql:host=$host;port=3306;dbname=$dbname", $user, $password);
     } catch (PDOException $e) {
-        echo "Erro de conexão: " . $e->getMessage();
+        throw new PDOException($e->getMessage());
     }
 
     return null;

@@ -3,14 +3,22 @@
 class User
 {
     private int $id;
-    private string $name;
-    private string $password;
+    private string $username;
+    private string $email;
+    private DateTime $birthdate;
 
-    public function __construct(int $id, string $name, string $password)
+    /**
+     * @param int $id
+     * @param string $username
+     * @param string $email
+     * @param DateTime $birthdate
+     */
+    public function __construct(int $id, string $username, string $email, DateTime $birthdate)
     {
         $this->id = $id;
-        $this->name = $name;
-        $this->password = $password;
+        $this->username = $username;
+        $this->email = $email;
+        $this->birthdate = $birthdate;
     }
 
     public function getId(): int
@@ -23,23 +31,33 @@ class User
         $this->id = $id;
     }
 
-    public function getName(): string
+    public function getUsername(): string
     {
-        return $this->name;
+        return $this->username;
     }
 
-    public function setName(string $name): void
+    public function setUsername(string $username): void
     {
-        $this->name = $name;
+        $this->username = $username;
     }
 
-    public function getPassword(): string
+    public function getEmail(): string
     {
-        return $this->password;
+        return $this->email;
     }
 
-    public function setPassword(string $password): void
+    public function setEmail(string $email): void
     {
-        $this->password = $password;
+        $this->email = $email;
+    }
+
+    public function getBirthdate(): DateTime
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(DateTime $birthdate): void
+    {
+        $this->birthdate = $birthdate;
     }
 }

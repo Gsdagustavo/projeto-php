@@ -12,14 +12,16 @@ class UserRepository
 
     public function addUser(User $user): int
     {
-        $sql = "INSERT INTO users (name, password) VALUES (:name, :password)";
+        $sql = "INSERT INTO users (username, email, birth_date) VALUES (:username, :email, :birth_date)";
         $stmt = $this->connection->prepare($sql);
 
-        $name = $user->getName();
-        $password = $user->getPassword();
+        $name = $user->getUsername();
+        $email = $user->getEmail();
+        $birthDate = $user->getBirthdate();
 
-        $stmt->bindParam(":name", $name);
-        $stmt->bindParam(":password", $password);
+        $stmt->bindParam(":username", $name);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":birth_date", $birthDate);
 
         $stmt->execute();
         return $stmt->rowCount();
@@ -36,13 +38,17 @@ class UserRepository
 
     public function updateUser(User $user): int
     {
-        $sql = "UPDATE users SET name = :name, password = :password WHERE id = :id";
+        $sql = "UPDATE users SET username = :username, email = :email, birth_date = :birth_date WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
-        $name = $user->getName();
-        $password = $user->getPassword();
-        $stmt->bindParam(":name", $name);
-        $stmt->bindParam(":password", $password);
-        $stmt->bindParam(":id", $id);
+
+        $name = $user->getUsername();
+        $email = $user->getEmail();
+        $birthDate = $user->getBirthdate();
+
+        $stmt->bindParam(":username", $name);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":birth_date", $birthDate);
+
         $stmt->execute();
         return $stmt->rowCount();
     }
@@ -57,32 +63,20 @@ class UserRepository
 
     public function getUserByName(string $name): ?User
     {
-        $sql = "SELECT * FROM users WHERE name = :name";
+        $sql = "SELECT (id, username, email, birth_date) FROM users WHERE username = :username";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(":name", $name);
+        $stmt->bindParam(":username", $name);
         $stmt->execute();
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return new User($data['id'], $data['name'], $data['password']);
+        return new User($data['id'], $data['username'], $data['email'], $data['birth_date']);
     }
 
-    public function checkUserPassword(int $userID, string $password): bool
-    {
-        $sql = "SELECT * FROM users WHERE id = :id";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(":id", $userID);
-        $stmt->execute();
-        $result = $stmt->fetch();
-
-        $pass = $result->getPasssword();
-
-        return $pass === $password;
-    }
 
     public function getUserById(int $userID): ?User
     {
-        $sql = "SELECT * FROM users WHERE id = :id";
+        $sql = "SELECT (id, username, email, birth_date) FROM users WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(":id", $userID);
         $stmt->execute();
@@ -92,6 +86,6 @@ class UserRepository
             return null;
         }
 
-        return new User($data['id'], $data['name'], $data['password']);
+        return new User($data['id'], $data['username'], $data['email'], $data['birth_date']);
     }
 }

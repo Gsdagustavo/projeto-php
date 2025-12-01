@@ -2,6 +2,7 @@
 
 global $userUseCase;
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../domain/entities/user.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $route = $_GET['route'] ?? null;
@@ -31,6 +32,56 @@ if ($method == 'POST' && $route == 'login') {
 if ($method == 'GET' && $route == 'users') {
     $users = $userUseCase->getAllUsers();
     echo json_encode($users);
+    exit;
+}
+
+if ($method == 'POST' && $route == 'users') {
+    $body = json_decode(file_get_contents('php://input'), true);
+
+    if (!$body
+        || empty($body['username'])
+        || empty($body['email'])
+        || empty($body['birthdate'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid JSON body'
+        ]);
+        exit;
+    }
+
+    // Parse date as DateTime
+    $birth = DateTime::createFromFormat('Y-m-d', $body['birthdate']);
+    if (!$birth) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid birthdate format (expected Y-m-d)'
+        ]);
+        exit;
+    }
+
+    // Create domain entity
+    $user = new User(
+        id: 0,
+        username: $body['username'],
+        email: $body['email'],
+        birthdate: $birth
+    );
+
+    // Call use case
+    $result = $userUseCase->addUser($user);
+
+    if ($result !== null) {
+        echo json_encode([
+            'success' => false,
+            'message' => $result
+        ]);
+        exit;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'User created successfully!'
+    ]);
     exit;
 }
 

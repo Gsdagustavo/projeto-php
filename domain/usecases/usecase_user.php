@@ -32,7 +32,7 @@ class UserUseCase
 
         $rowsAffected = $this->userRepository->addUser($user);
         if ($rowsAffected != 1) {
-            return "Credenciais inválidas";
+            return "Usuario com informacoes inválidas";
         }
 
         return null;
@@ -40,15 +40,20 @@ class UserUseCase
 
     private function validateUser(User $user): ?string
     {
-        $user->setName(trim($user->getName()));
-        $user->setPassword(trim($user->getPassword()));
-
-        if ($user->getName() == "" || strlen($user->getName()) == 0) {
-            return "Nome inválido";
+        $user->setUsername(trim($user->getUsername()));
+        $user->setEmail(trim($user->getEmail()));
+        if ($user->getUsername() == "" || strlen($user->getUsername()) == 0) {
+            return 'Nome inválido';
         }
 
-        if ($user->getPassword() == "" || strlen($user->getPassword()) == 0) {
-            return "Nome inválido";
+        if (filter_var($user->getEmail(), FILTER_VALIDATE_EMAIL) === false) {
+            return 'Email inválido';
+        }
+
+        $minTime = new DateTime('1900-01-01');
+        $maxTime = new DateTime('now');
+        if ($user->getBirthdate() <= $minTime || $user->getBirthdate() >= $maxTime) {
+            return 'Data de nascimento inválida';
         }
 
         return null;
@@ -93,5 +98,4 @@ class UserUseCase
     {
         return $this->userRepository->getUserById($id);
     }
-
 }
