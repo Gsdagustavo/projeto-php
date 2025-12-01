@@ -29,6 +29,26 @@ if ($method == 'POST' && $route == 'login') {
     exit;
 }
 
+if ($method == 'POST' && $route == 'register') {
+    $body = json_decode(file_get_contents('php://input'), true);
+
+    $result = $userUseCase->register($body['username'], $body['email'], $body['birthdate'], $body['password']);
+    if ($result !== null) {
+        echo json_encode([
+            'success' => false,
+            'message' => $result
+        ]);
+        exit;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Registro bem sucedido!',
+    ]);
+
+    exit;
+}
+
 if ($method == 'GET' && $route == 'users') {
     $users = $userUseCase->getAllUsers();
     echo json_encode($users);

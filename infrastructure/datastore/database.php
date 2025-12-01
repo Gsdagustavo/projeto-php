@@ -8,7 +8,7 @@ function getConnection(): ?PDO
     $dbname = "projeto_php";
 
     try {
-        return new PDO("mysql:host=$host;port=3306;dbname=$dbname", $user, $password);
+        return new PDO("mysql:host=$host;port=3307;dbname=$dbname", $user, $password);
     } catch (PDOException $e) {
         throw new PDOException($e->getMessage());
     }

@@ -27,6 +27,20 @@ class UserRepository
         return $stmt->rowCount();
     }
 
+    public function login(string $username, string $password): bool
+    {
+        $sql = "SELECT username, password FROM users WHERE username = :username";
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->bindParam(":username", $username);
+
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $rowPassword = $row['password'];
+
+        return $password == $rowPassword;
+    }
+
     public function removeUser(int $id): int
     {
         $sql = "DELETE FROM users WHERE id = :id";
