@@ -25,6 +25,11 @@ class UserUseCase
         return null;
     }
 
+    public function getUsersByName(string $name): array
+    {
+        return $this->userRepository->getUsersByName($name);
+    }
+
     public function register(string $name, string $email, DateTime $birthdate, string $password): ?string
     {
         $existing = $this->userRepository->getUserByEmail($name);

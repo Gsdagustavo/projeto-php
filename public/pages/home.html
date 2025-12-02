@@ -19,9 +19,18 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Home</h1>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-        Add User
-    </button>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            Adicionar usuário
+        </button>
+        <button class="btn btn-danger" onclick="logout()">
+            Logout
+        </button>
+    </div>
+</div>
+
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nome...">
 </div>
 
 <div class="table-responsive">
@@ -115,15 +124,25 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
+        document.getElementById('searchInput').addEventListener('input', async (e) => {
+            const value = e.target.value.trim();
+            await loadUsers(value);
+        });
+
         await loadUsers();
+
         document.getElementById('saveUserBtn').addEventListener('click', addUser);
     });
 
-    async function loadUsers() {
-        const response = await fetch('../api.php?route=users');
+    async function loadUsers(name = "") {
+        const url = name
+            ? `../api.php?route=users&name=${encodeURIComponent(name)}`
+            : `../api.php?route=users`;
+
+        const response = await fetch(url);
 
         if (response.status === 401) {
-            window.location.href = '/projeto-php/public/pages/login.php';
+            window.location.href = 'login.html';
             return;
         }
 
@@ -259,6 +278,18 @@
         }
 
         await loadUsers();
+    }
+
+    async function logout() {
+        const response = await fetch('../api.php?route=logout', {
+            method: 'POST',
+        });
+        if (!response.ok) {
+            alert('Erro interno no servidor. Tente novamente mais tarde');
+            return;
+        }
+
+        window.location.href = 'login.html';
     }
 
 </script>

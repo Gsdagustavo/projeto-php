@@ -70,21 +70,21 @@ class UserRepository
     }
 
 
-    public function getUserByName(string $name): ?User
+    public function getUsersByName(string $name): array
     {
-        $sql = "SELECT id, username, password, email, birth_date FROM users WHERE username = :username";
+        $sql = "SELECT id, username, password, email, birth_date 
+            FROM users 
+            WHERE username LIKE :username";
+
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(":username", $name);
+
+        $like = "%$name%";
+        $stmt->bindParam(":username", $like);
+
         $stmt->execute();
-
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$data) {
-            return null;
-        }
-
-        return new User($data['id'], $data['username'], $data['password'], $data['email'], new DateTime($data['birth_date']));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function getUserByEmail(string $email): ?User
     {

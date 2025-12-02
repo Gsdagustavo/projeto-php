@@ -26,21 +26,13 @@
 <body>
 
 <div class="card shadow p-4"
-     style="width: 400px; height: 400px; display: flex; flex-direction: column;">
+     style="width: 400px; height: 300px; display: flex; flex-direction: column;">
 
-    <h3 class="text-center mb-3">Registrar</h3>
+    <h3 class="text-center mb-3">Login</h3>
 
     <div class="fields" style="flex: 1; display: flex; flex-direction: column;">
         <div class="mb-3">
-            <input id="username-input" type="text" class="form-control" placeholder="Usuário">
-        </div>
-
-        <div class="mb-3">
             <input id="email-input" type="email" class="form-control" placeholder="Email">
-        </div>
-
-        <div class="mb-3">
-            <input id="birth-input" type="date" class="form-control" placeholder="Data de nascimento">
         </div>
 
         <div class="mb-3">
@@ -53,29 +45,25 @@
             Entrar
         </button>
 
-        <div style="display: flex; justify-content: center; margin-top: 16px">Já tem uma conta?<a href="login.php">
-                Entre aqui</a></div>
+        <div style="display: flex; justify-content: center; margin-top: 16px">Não tem uma conta?<a href="register.html">Crie
+                uma aqui</a></div>
     </div>
 
 </div>
 
 <script>
-    const registerBtn = document.getElementById('submit-btn');
+    const loginBtn = document.getElementById('submit-btn');
 
-    registerBtn.addEventListener('click', async () => {
-        const usernameInput = document.getElementById('username-input');
+    loginBtn.addEventListener('click', async () => {
         const emailInput = document.getElementById('email-input');
-        const birthDateInput = document.getElementById('birth-input');
         const passInput = document.getElementById('password-input');
 
         const user = {
-            name: usernameInput.value,
             email: emailInput.value,
-            birthdate: birthDateInput.value,
             password: passInput.value,
         };
 
-        const response = await fetch('../api.php?route=register', {
+        const response = await fetch('../api.php?route=login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -102,7 +90,7 @@
         feedback.visible = false
         feedback.innerHTML = ''
 
-        window.location.href = '/projeto-php/public/pages/home.php';
+        window.location.href = 'home.html';
     });
 </script>
 

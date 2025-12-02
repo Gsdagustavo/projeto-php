@@ -2,7 +2,6 @@
 session_start();
 
 global $userUseCase;
-require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../domain/entities/user.php';
 
@@ -10,6 +9,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $route = $_GET['route'] ?? null;
 
 header('Content-Type: application/json');
+
+function requireLogin(): void
+{
+    if (!isset($_SESSION['user'])) {
+        http_response_code(401);
+        exit;
+    }
+}
 
 if ($method == 'POST' && $route == 'login') {
     $body = json_decode(file_get_contents('php://input'), true);
@@ -87,9 +94,16 @@ if ($method == 'POST' && $route == 'logout') {
 if ($method == 'GET' && $route == 'users') {
     requireLogin();
 
-    $users = $userUseCase->getAllUsers();
-    echo json_encode($users);
-    exit;
+    if (isset($_GET['name']) && $_GET['name'] !== '') {
+        $name = $_GET['name'];
+        $users = $userUseCase->getUsersByName($name);
+        echo json_encode($users);
+        return;
+    } else {
+        $users = $userUseCase->getAllUsers();
+        echo json_encode($users);
+        return;
+    }
 }
 
 if ($method == 'POST' && $route == 'users') {
