@@ -60,7 +60,6 @@ class UserRepository
         return $stmt->rowCount();
     }
 
-
     public function getAllUsers(): array
     {
         $sql = "SELECT id, username, email, birth_date FROM users";
@@ -68,7 +67,6 @@ class UserRepository
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     public function getUsersByName(string $name): array
     {
@@ -85,6 +83,26 @@ class UserRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function attemptLogin(string $email, string $password): bool
+    {
+        $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(":email", $email);
+        $stmt->execute();
+        $count = $stmt->fetchColumn();
+        if ($count <= 0) {
+            return false;
+        }
+
+        $sql = "SELECT password from users WHERE email = :email";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(":email", $email);
+
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return password_verify($password, $row['password']);
+    }
 
     public function getUserByEmail(string $email): ?User
     {
@@ -118,13 +136,7 @@ class UserRepository
             return null;
         }
 
-        return new User(
-            $data['id'],
-            $data['username'],
-            $data['password'],
-            $data['email'],
-            new DateTime($data['birth_date'])
-        );
+        return new User($data['id'], $data['username'], $data['password'], $data['email'], new DateTime($data['birth_date']));
     }
 
 }

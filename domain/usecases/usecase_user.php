@@ -1,7 +1,5 @@
 <?php
 
-const internalError = "Erro interno no servidor. Tente novamente mais tarde";
-
 class UserUseCase
 {
     public UserRepository $userRepository;
@@ -18,7 +16,8 @@ class UserUseCase
             return 'Credenciais inválidas';
         }
 
-        if ($password != $user->getPassword()) {
+        $validCredentials = $this->userRepository->attemptLogin($email, $password);
+        if (!$validCredentials) {
             return 'Credenciais inválidas';
         }
 
@@ -37,7 +36,9 @@ class UserUseCase
             return 'Usuario já existente';
         }
 
-        $user = new User(0, $name, $password, $email, $birthdate);
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $user = new User(0, $name, $hashedPassword, $email, $birthdate);
         return $this->addUser($user);
     }
 
@@ -96,7 +97,7 @@ class UserUseCase
 
         $rowsAffected = $this->userRepository->updateUser($user);
         if ($rowsAffected != 1) {
-            return internalError;
+            return "Erro interno no servidor. Tente novamente mais tarde";
         }
 
         return null;
@@ -111,7 +112,7 @@ class UserUseCase
 
         $rowsAffected = $this->userRepository->removeUser($user->getId());
         if ($rowsAffected != 1) {
-            return internalError;
+            return "Erro interno no servidor. Tente novamente mais tarde";
         }
 
         return null;
