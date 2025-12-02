@@ -124,6 +124,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
+        await loadLoggedUser();
         document.getElementById('searchInput').addEventListener('input', async (e) => {
             const value = e.target.value.trim();
             await loadUsers(value);
