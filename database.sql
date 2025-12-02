@@ -9,8 +9,11 @@ CREATE TABLE IF NOT EXISTS users
     id          INT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
     username    VARCHAR(50),
     email       VARCHAR(50),
+    password    VARCHAR(255),
     birth_date  DATETIME  NOT NULL,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
+drop table users;

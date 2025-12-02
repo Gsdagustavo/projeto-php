@@ -69,9 +69,9 @@
         const passInput = document.getElementById('password-input');
 
         const user = {
-            username: usernameInput.value,
+            name: usernameInput.value,
             email: emailInput.value,
-            birthDateInput: birthDateInput.value,
+            birthdate: birthDateInput.value,
             password: passInput.value,
         };
 

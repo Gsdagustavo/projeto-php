@@ -29,9 +29,10 @@
         <thead class="table-dark">
         <tr>
             <th class="col-id">ID</th>
-            <th>Username</th>
+            <th>Nome</th>
             <th>Email</th>
-            <th>Birth Date</th>
+            <th>Data de nascimento</th>
+            <th>Ações</th>
         </tr>
         </thead>
         <tbody id="usersTableBody"></tbody>
@@ -44,7 +45,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Add User</h5>
+                <h5 class="modal-title">Adicionar usuário</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -62,6 +63,39 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button class="btn btn-primary" id="saveUserBtn">Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT USER MODAL -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+
+                <label class="form-label mt-2">Username</label>
+                <input type="text" id="editUsername" class="form-control">
+
+                <label class="form-label mt-3">Email</label>
+                <input type="email" id="editEmail" class="form-control">
+
+                <label class="form-label mt-3">Birth Date</label>
+                <input type="date" id="editBirthDate" class="form-control">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-warning" id="updateUserBtn">Save Changes</button>
             </div>
 
         </div>
@@ -107,13 +141,37 @@
     function buildRow(user) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="col-id">${user.id}</td>
-            <td>${user.username}</td>
-            <td>${user.email || "-"}</td>
-            <td>${user.birthdate || "-"}</td>
-        `;
+        <td class="col-id">${user.id}</td>
+        <td>${user.username}</td>
+        <td>${user.email || "-"}</td>
+        <td>${user.birthdate || "-"}</td>
+        <td>
+            <button class="btn btn-sm btn-warning me-2"
+                onclick="openEditModal(${user.id}, '${user.username}', '${user.email}', '${user.birthdate}')">
+                Editar
+            </button>
+
+            <button class="btn btn-sm btn-danger"
+                onclick="removeUser(${user.id})">
+                Remover
+            </button>
+        </td>
+    `;
         return tr;
     }
+
+    function openEditModal(id, username, email, birthdate) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editUsername').value = username;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editBirthDate').value = birthdate;
+
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        modal.show();
+
+        document.getElementById('updateUserBtn').onclick = updateUser;
+    }
+
 
     async function addUser() {
         const username = document.getElementById('newUsername').value.trim();
@@ -147,6 +205,58 @@
 
         await loadUsers();
     }
+
+    async function updateUser() {
+        const id = Number(document.getElementById('editId').value);
+        const username = document.getElementById('editUsername').value.trim();
+        const email = document.getElementById('editEmail').value.trim();
+        const birthdate = document.getElementById('editBirthDate').value;
+
+        const response = await fetch('../api.php?route=users', {
+            method: 'PUT',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({id, username, email, birthdate})
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+        modal.hide();
+
+        await loadUsers();
+    }
+
+    async function removeUser(id) {
+        if (!confirm("Tem certeza que deseja remover este usuário?")) {
+            return;
+        }
+
+        const response = await fetch(`../api.php?route=users`, {
+            method: 'DELETE',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({id})
+        });
+
+        if (!response.ok) {
+            alert("Erro interno no servidor. Tente novamente mais tarde");
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        await loadUsers();
+    }
+
 </script>
 
 </body>
