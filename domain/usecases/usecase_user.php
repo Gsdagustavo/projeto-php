@@ -11,9 +11,9 @@ class UserUseCase
         $this->userRepository = $userRepository;
     }
 
-    public function login(string $name, string $password): ?string
+    public function login(string $email, string $password): ?string
     {
-        $user = $this->userRepository->getUserByName($name);
+        $user = $this->userRepository->getUserByEmail($email);
         if (!$user) {
             return 'Credenciais inválidas';
         }

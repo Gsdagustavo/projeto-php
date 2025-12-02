@@ -32,7 +32,7 @@
 
     <div class="fields" style="flex: 1; display: flex; flex-direction: column;">
         <div class="mb-3">
-            <input id="username-input" type="text" class="form-control" placeholder="Usuário">
+            <input id="email-input" type="email" class="form-control" placeholder="Email">
         </div>
 
         <div class="mb-3">
@@ -45,7 +45,8 @@
             Entrar
         </button>
 
-        <div style="display: flex; justify-content: center; margin-top: 16px">Não tem uma conta?<a href="register.php">Crie uma aqui</a></div>
+        <div style="display: flex; justify-content: center; margin-top: 16px">Não tem uma conta?<a href="register.php">Crie
+                uma aqui</a></div>
     </div>
 
 </div>
@@ -54,11 +55,11 @@
     const loginBtn = document.getElementById('submit-btn');
 
     loginBtn.addEventListener('click', async () => {
-        const usernameInput = document.getElementById('username-input');
+        const emailInput = document.getElementById('email-input');
         const passInput = document.getElementById('password-input');
 
         const user = {
-            username: usernameInput.value,
+            email: emailInput.value,
             password: passInput.value,
         };
 

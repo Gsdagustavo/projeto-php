@@ -1,6 +1,8 @@
 <?php
+session_start();
 
 global $userUseCase;
+require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../domain/entities/user.php';
 
@@ -12,7 +14,7 @@ header('Content-Type: application/json');
 if ($method == 'POST' && $route == 'login') {
     $body = json_decode(file_get_contents('php://input'), true);
 
-    $result = $userUseCase->login($body['username'], $body['password']);
+    $result = $userUseCase->login($body['email'], $body['password']);
     if ($result !== null) {
         echo json_encode([
             'success' => false,
@@ -25,6 +27,10 @@ if ($method == 'POST' && $route == 'login') {
         'success' => true,
         'message' => 'Login bem sucedido!'
     ]);
+
+    $_SESSION['user'] = [
+        'email' => $body['email'],
+    ];
 
     exit;
 }
@@ -72,13 +78,23 @@ if ($method == 'POST' && $route == 'register') {
     exit;
 }
 
+if ($method == 'POST' && $route == 'logout') {
+    session_destroy();
+    echo json_encode(['success' => true]);
+    return;
+}
+
 if ($method == 'GET' && $route == 'users') {
+    requireLogin();
+
     $users = $userUseCase->getAllUsers();
     echo json_encode($users);
     exit;
 }
 
 if ($method == 'POST' && $route == 'users') {
+    requireLogin();
+
     $body = json_decode(file_get_contents('php://input'), true);
 
     if (!$body
@@ -127,6 +143,8 @@ if ($method == 'POST' && $route == 'users') {
 }
 
 if ($method == 'PUT' && $route == 'users') {
+    requireLogin();
+
     $body = json_decode(file_get_contents('php://input'), true);
 
     if (!$body || empty($body['id']) || empty($body['username']) || empty($body['email']) || empty($body['birthdate'])) {
@@ -172,6 +190,8 @@ if ($method == 'PUT' && $route == 'users') {
 }
 
 if ($method == 'DELETE' && $route == 'users') {
+    requireLogin();
+
     $body = json_decode(file_get_contents('php://input'), true);
 
     if (!$body || empty($body['id'])) {
@@ -190,7 +210,6 @@ if ($method == 'DELETE' && $route == 'users') {
         ]);
         exit;
     }
-
     $result = $userUseCase->removeUser($user);
 
     if ($result !== null) {

@@ -69,7 +69,6 @@
     </div>
 </div>
 
-
 <!-- EDIT USER MODAL -->
 <div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog">
@@ -122,6 +121,11 @@
 
     async function loadUsers() {
         const response = await fetch('../api.php?route=users');
+
+        if (response.status === 401) {
+            window.location.href = '/projeto-php/public/pages/login.php';
+            return;
+        }
 
         if (!response.ok) {
             alert('Erro interno no servidor. Tente novamente mais tarde');
